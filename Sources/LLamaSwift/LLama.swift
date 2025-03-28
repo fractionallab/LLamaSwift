@@ -265,7 +265,7 @@ public actor LLama {
   ///   - add_bos: A flag indicating whether to add a beginning-of-sequence token.
   ///
   /// - Returns: An array of token IDs.
-  private func tokenize(text: String, add_bos: Bool) -> [llama_token] {
+  public func tokenize(text: String, add_bos: Bool) -> [llama_token] {
     let utf8Data = text.utf8CString
     let nTokens = Int32(utf8Data.count) + (add_bos ? 1 : 0)
     let tokens = UnsafeMutablePointer<llama_token>.allocate(capacity: Int(nTokens))
