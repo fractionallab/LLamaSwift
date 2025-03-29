@@ -266,18 +266,14 @@ public actor LLama {
   ///
   /// - Returns: An array of token IDs.
   public func tokenize(text: String, add_bos: Bool) -> [llama_token] {
-    let utf8Data = text.utf8CString
-    let nTokens = Int32(utf8Data.count) + (add_bos ? 1 : 0)
-    let tokens = UnsafeMutablePointer<llama_token>.allocate(capacity: Int(nTokens))
-    defer { tokens.deallocate() }
-
-    let tokenCount = llama_tokenize(
-      model.model, text, Int32(utf8Data.count), tokens, Int32(nTokens), add_bos, false)
-    guard tokenCount > 0 else {
-      return []
-    }
-
-    return Array(UnsafeBufferPointer(start: tokens, count: Int(tokenCount)))
+      let utf8Count = text.utf8.count
+      let n_tokens = utf8Count + (add_bos ? 1 : 0) + 1
+      
+      return Array(unsafeUninitializedCapacity: n_tokens) { buffer, initializedCount in
+          initializedCount = Int(
+            llama_tokenize(model.model, text, Int32(utf8Count), buffer.baseAddress, Int32(n_tokens), add_bos, false)
+          )
+      }
   }
 
   /// Converts a token ID to an array of CChars representing the token piece.
